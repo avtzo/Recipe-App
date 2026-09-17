@@ -1,6 +1,6 @@
 import { ingredientsList } from "./ingredients.js";
 
-const apiKey = "478717df8fb64e79be4ee7c955781fbd"; // Your API Key Here
+const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
 
 const randomRecipesBtn = document.getElementById("random-recipes-btn");
