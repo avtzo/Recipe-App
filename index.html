@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="menu-screen">
+        <div class="menu-screen-layout">
+            <h1>Find your Recipe</h1>
+            <div class="options">
+                <div class="option">
+                    <button type="button" id="random-recipes-btn">Random Recipes</button>
+                </div>
+                <div class="option">
+                    <button type="button" id="search-by-ingredient-btn">Recipes by Ingredient</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="my-ingredients-screen hidden">
+        <div class="my-ingredients-screen-layout">
+            <h1>My Ingredients</h1>
+            <div class="my-ingredients-display"></div>
+            <button type="button" id="add-ingredient-btn">Add Ingredient</button>
+            <button type="button" id="remove-ingredient-btn">Remove Ingredient</button>
+            <button type="button" class="back-to-menu-btn">Back To Menu</button>
+            <div class="add-remove-ingredients-screen hidden">
+                <div class="add-remove-ingredients-screen-layout">
+                    <h1>PLACEHOLDER</h1>
+                    <div class="ingredients-container"></div>
+                    <button type="button" id="add-remove-ingredients-btn">Confirm</button>
+                </div>
+            </div>
+            <button type="button" id="confirm-ingredients-btn">Search Recipes</button>
+        </div>
+    </div>
+
+    <div class="recipes-screen hidden">
+        <div class="recipes-screen-layout">
+            <h1>PLACEHOLDER</h1>
+            <div class="recipes-header">
+                <button type="button" class="back-to-menu-btn">Back To Menu</button>
+            </div>
+            <div class="recipes-container"></div>
+        </div>
+    </div>
+
+    <script src="script.js" type="module" defer></script>
+</body>
+</html>
