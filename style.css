@@ -11,3 +11,13 @@ body {
 .hidden {
     display: none;
 }
+
+.clicked {
+    transform: scale(0.9);
+}
+
+.ingredient-box {
+    border: 3px solid black;
+    width: 150px;
+    height: 150px;
+}

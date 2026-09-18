@@ -2,6 +2,7 @@ import { ingredientsList } from "./ingredients.js";
 
 const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
+const mySavedRecipes = JSON.parse(localStorage.getItem("mySavedRecipes")) || [];
 
 const randomRecipesBtn = document.getElementById("random-recipes-btn");
 const searchByIngredientsBtn = document.getElementById("search-by-ingredient-btn");
@@ -29,7 +30,7 @@ const recipesContainer = document.querySelector(".recipes-container");
 async function getData(type, ingredients) {
     const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
     const cleanIngredients = ingredients ? ingredients.trim() : "";
-    const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=6`;
+    const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=1`;
     try {
         let response = "";
         if (type === "randomSearch") {
@@ -50,16 +51,61 @@ async function getData(type, ingredients) {
     }
 }
 
-getData("randomSearch");
+function createRecipeContainer(recipe) {
+    const container = document.createElement("div");
+    container.classList.add("recipe-box");
+    container.innerHTML = 
+    `
+        <img src="${recipe.image}" alt=${recipe.title}>
+        <h1 class="recipe-name">${recipe.title}</h1>
+        <p class="ready-time">Ready In: <span>${recipe.readyInMinutes}</span></p>
+    `;
+    return container;
+}
+
+async function displayRandomRecipes() {
+    const data = await getData("randomSearch");
+    const recipes = data?.recipes || [];
+    recipes.forEach((recipe) => {
+        recipesContainer.appendChild(createRecipeContainer(recipe));
+    });
+}
+
+function renderIngredients(type, ingredientIds) {
+    ingredientIds.forEach((ingredientId) => {
+        const ingredient = ingredientsList.find(
+            (ingredient) => ingredient.id === Number(ingredientId)
+        );
+        if (!ingredient) return;
+
+        const container = document.createElement("div");
+        container.classList.add("ingredient-box");
+        container.innerHTML =
+        `
+            <img src=${ingredient.image} alt="${ingredient.name}">
+            <h1 class="ingredient-name">${ingredient.displayName}</h1>
+        `;
+        if (type === "myIngredients") {
+            currentIngredientsDisplay.appendChild(container);
+        }
+        if (type === "allIngredients") {
+            container.classList.add("all-ingredients");
+            ingredientsContainer.appendChild(container);
+        }
+    });
+}
+
 
 randomRecipesBtn.addEventListener("click", () => {
     menuScreen.classList.add("hidden");
     recipesScreen.classList.remove("hidden");
+    displayRandomRecipes();
 });
 
 searchByIngredientsBtn.addEventListener("click", () => {
     menuScreen.classList.add("hidden");
     myIngredientsScreen.classList.remove("hidden");
+    renderIngredients("myIngredients", myIngredients);
 });
 
 backToMenuBtn.forEach((btn) => {
@@ -70,7 +116,20 @@ backToMenuBtn.forEach((btn) => {
     });
 });
 
+addIngredientBtn.addEventListener("click", () => {
+    addRemoveIngredientScreen.classList.remove("hidden");
+    renderIngredients(
+        "allIngredients",
+        ingredientsList.map((ingredient) => ingredient.id)
+    );
+});
+
+confirmAddRemoveIngredientBtn.addEventListener("click", () => {
+    addRemoveIngredientScreen.classList.add("hidden");
+});
+
 confirmIngredientsBtn.addEventListener("click", () => {    
     myIngredientsScreen.classList.add("hidden");
     recipesScreen.classList.remove("hidden");
 });
+
