@@ -1,8 +1,10 @@
 import { ingredientsList } from "./ingredients.js";
 
+
 const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
 const mySavedRecipes = JSON.parse(localStorage.getItem("mySavedRecipes")) || [];
+let ingredientsToAdd = [];
 
 const randomRecipesBtn = document.getElementById("random-recipes-btn");
 const searchByIngredientsBtn = document.getElementById("search-by-ingredient-btn");
@@ -82,7 +84,7 @@ function renderIngredients(type, ingredientIds) {
         container.classList.add("ingredient-box");
         container.innerHTML =
         `
-            <img src=${ingredient.image} alt="${ingredient.name}">
+            <img src="images/ingredients/${ingredient.image}" alt="${ingredient.name}">
             <h1 class="ingredient-name">${ingredient.displayName}</h1>
         `;
         if (type === "myIngredients") {
@@ -95,6 +97,13 @@ function renderIngredients(type, ingredientIds) {
     });
 }
 
+
+document.addEventListener("click", (e) => {
+    const ingredientBox = e.target.closest(".all-ingredients");
+    if (ingredientBox) {
+        ingredientBox.classList.toggle("clicked");
+    }
+});
 
 randomRecipesBtn.addEventListener("click", () => {
     menuScreen.classList.add("hidden");
@@ -118,10 +127,8 @@ backToMenuBtn.forEach((btn) => {
 
 addIngredientBtn.addEventListener("click", () => {
     addRemoveIngredientScreen.classList.remove("hidden");
-    renderIngredients(
-        "allIngredients",
-        ingredientsList.map((ingredient) => ingredient.id)
-    );
+    ingredientsContainer.innerHTML = "";
+    renderIngredients("allIngredients", ingredientsList.map((ingredient) => ingredient.id));
 });
 
 confirmAddRemoveIngredientBtn.addEventListener("click", () => {
