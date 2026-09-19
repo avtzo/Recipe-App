@@ -58,7 +58,7 @@ function createRecipeContainer(recipe) {
     container.classList.add("recipe-box");
     container.innerHTML = 
     `
-        <img src="${recipe.image}" alt=${recipe.title}>
+        <img src="${recipe.image}" alt="${recipe.title}">
         <h1 class="recipe-name">${recipe.title}</h1>
         <p class="ready-time">Ready In: <span>${recipe.readyInMinutes}</span></p>
     `;
@@ -66,6 +66,7 @@ function createRecipeContainer(recipe) {
 }
 
 async function displayRandomRecipes() {
+    recipesContainer.innerHTML = "";
     const data = await getData("randomSearch");
     const recipes = data?.recipes || [];
     recipes.forEach((recipe) => {
@@ -114,6 +115,7 @@ randomRecipesBtn.addEventListener("click", () => {
 searchByIngredientsBtn.addEventListener("click", () => {
     menuScreen.classList.add("hidden");
     myIngredientsScreen.classList.remove("hidden");
+    currentIngredientsDisplay.innerHTML = "";
     renderIngredients("myIngredients", myIngredients);
 });
 
