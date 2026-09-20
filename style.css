@@ -40,10 +40,10 @@ html {
 }
 
 .my-ingredients-display {
-    max-width: 1000px;
+    max-width: 90vw;
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     margin-bottom: 30px;
 }
 

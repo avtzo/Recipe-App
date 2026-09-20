@@ -1,15 +1,12 @@
 import { ingredientsList } from "./ingredients.js";
 
-
 const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
 const mySavedRecipes = JSON.parse(localStorage.getItem("mySavedRecipes")) || [];
-let ingredientsToAdd = [];
 
 const randomRecipesBtn = document.getElementById("random-recipes-btn");
 const searchByIngredientsBtn = document.getElementById("search-by-ingredient-btn");
-const addIngredientBtn = document.getElementById("add-ingredient-btn");
-const removeIngredientBtn = document.getElementById("remove-ingredient-btn");
+const editIngredientsBtn = document.getElementById("edit-ingredients-btn");
 const confirmAddRemoveIngredientBtn = document.getElementById("add-remove-ingredients-btn");
 const confirmIngredientsBtn = document.getElementById("confirm-ingredients-btn");
 const backToMenuBtn = document.querySelectorAll(".back-to-menu-btn");
@@ -29,10 +26,15 @@ const recipesContainer = document.querySelector(".recipes-container");
 
 // End of Elements
 
-async function getData(type, ingredients) {
-    const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
-    const cleanIngredients = ingredients ? ingredients.trim() : "";
+async function getData(type, ingredients = []) {
+    const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`;
+    
+    const cleanIngredients = Array.isArray(ingredients) 
+        ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
+        : "";
+    
     const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=1`;
+    
     try {
         let response = "";
         if (type === "randomSearch") {
@@ -46,7 +48,6 @@ async function getData(type, ingredients) {
         }
 
         const data = await response.json();
-        console.log(data);
         return data;
     } catch(error) {
         console.error(`Error: ${error.message}`);
@@ -60,7 +61,7 @@ function createRecipeContainer(recipe) {
     `
         <img src="${recipe.image}" alt="${recipe.title}">
         <h1 class="recipe-name">${recipe.title}</h1>
-        <p class="ready-time">Ready In: <span>${recipe.readyInMinutes}</span></p>
+        <p class="ready-time">Ready In: <span>${recipe.readyInMinutes ? recipe.readyInMinutes + " mins" : "N/A"}</span></p>
     `;
     return container;
 }
@@ -69,6 +70,19 @@ async function displayRandomRecipes() {
     recipesContainer.innerHTML = "";
     const data = await getData("randomSearch");
     const recipes = data?.recipes || [];
+    console.log(data);
+    
+    recipes.forEach((recipe) => {
+        recipesContainer.appendChild(createRecipeContainer(recipe));
+    });
+}
+
+async function searchRecipesByIngredients() {
+    recipesContainer.innerHTML = "";
+    const data = await getData("ingredientSearch", myIngredients);
+    console.log(data);
+    
+    const recipes = Array.isArray(data) ? data : []; 
     recipes.forEach((recipe) => {
         recipesContainer.appendChild(createRecipeContainer(recipe));
     });
@@ -88,11 +102,15 @@ function renderIngredients(type, ingredientIds) {
             <img src="images/ingredients/${ingredient.image}" alt="${ingredient.name}">
             <h1 class="ingredient-name">${ingredient.displayName}</h1>
         `;
+        container.setAttribute("data-id", ingredient.id);
         if (type === "myIngredients") {
             currentIngredientsDisplay.appendChild(container);
         }
         if (type === "allIngredients") {
             container.classList.add("all-ingredients");
+            if (myIngredients.includes(ingredient.id)) {
+                container.classList.add("clicked");
+            }
             ingredientsContainer.appendChild(container);
         }
     });
@@ -127,7 +145,7 @@ backToMenuBtn.forEach((btn) => {
     });
 });
 
-addIngredientBtn.addEventListener("click", () => {
+editIngredientsBtn.addEventListener("click", () => {
     addRemoveIngredientScreen.classList.remove("hidden");
     ingredientsContainer.innerHTML = "";
     renderIngredients("allIngredients", ingredientsList.map((ingredient) => ingredient.id));
@@ -135,10 +153,22 @@ addIngredientBtn.addEventListener("click", () => {
 
 confirmAddRemoveIngredientBtn.addEventListener("click", () => {
     addRemoveIngredientScreen.classList.add("hidden");
+
+    const selectedBoxes = document.querySelectorAll(".all-ingredients.clicked");
+    const selectedIds = Array.from(selectedBoxes).map(box => Number(box.dataset.id));
+    
+    myIngredients.length = 0;
+    myIngredients.push(...selectedIds);
+    
+    localStorage.setItem("myIngredients", JSON.stringify(myIngredients));
+
+    currentIngredientsDisplay.innerHTML = "";
+    renderIngredients("myIngredients", selectedIds);
 });
 
 confirmIngredientsBtn.addEventListener("click", () => {    
     myIngredientsScreen.classList.add("hidden");
     recipesScreen.classList.remove("hidden");
+    searchRecipesByIngredients();
 });
 
