@@ -23,17 +23,19 @@ const recipesScreen = document.querySelector(".recipes-screen");
 const ingredientsContainer = document.querySelector(".ingredients-container");
 const currentIngredientsDisplay = document.querySelector(".my-ingredients-display");
 const recipesContainer = document.querySelector(".recipes-container");
+const ingredientsOptions = document.querySelector(".ingredients-options");
+
 
 // End of Elements
 
 async function getData(type, ingredients = []) {
-    const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`;
+    const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
     
     const cleanIngredients = Array.isArray(ingredients) 
         ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
         : "";
     
-    const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=1`;
+    const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=6`;
     
     try {
         let response = "";
@@ -56,12 +58,14 @@ async function getData(type, ingredients = []) {
 
 function createRecipeContainer(recipe) {
     const container = document.createElement("div");
-    container.classList.add("recipe-box");
+    container.classList.add(`recipe-box`);
+    container.setAttribute("data-recipeId", recipe.id);
     container.innerHTML = 
     `
         <img src="${recipe.image}" alt="${recipe.title}">
         <h1 class="recipe-name">${recipe.title}</h1>
         <p class="ready-time">Ready In: <span>${recipe.readyInMinutes ? recipe.readyInMinutes + " mins" : "N/A"}</span></p>
+        <button type="button" class="save-recipe-btn"><i class="fa-regular fa-bookmark"></i></button>    
     `;
     return container;
 }
@@ -119,8 +123,12 @@ function renderIngredients(type, ingredientIds) {
 
 document.addEventListener("click", (e) => {
     const ingredientBox = e.target.closest(".all-ingredients");
+    const saveRecipeBtn = e.target.closest(".save-recipe-btn");
     if (ingredientBox) {
         ingredientBox.classList.toggle("clicked");
+    }
+    if (saveRecipeBtn) {
+        
     }
 });
 
@@ -148,12 +156,15 @@ backToMenuBtn.forEach((btn) => {
 editIngredientsBtn.addEventListener("click", () => {
     addRemoveIngredientScreen.classList.remove("hidden");
     ingredientsContainer.innerHTML = "";
+    currentIngredientsDisplay.style.display = "none";
+    ingredientsOptions.style.display = "none";
     renderIngredients("allIngredients", ingredientsList.map((ingredient) => ingredient.id));
 });
 
 confirmAddRemoveIngredientBtn.addEventListener("click", () => {
     addRemoveIngredientScreen.classList.add("hidden");
-
+    currentIngredientsDisplay.style.display = "grid";
+    ingredientsOptions.style.display = "flex";
     const selectedBoxes = document.querySelectorAll(".all-ingredients.clicked");
     const selectedIds = Array.from(selectedBoxes).map(box => Number(box.dataset.id));
     

@@ -1,20 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    color: white;
+    font-family: "Fredoka", sans-serif;
+    min-height: 100%;
+}
+
 body {
     position: relative;
-    min-height: 100vh !important;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to bottom, #152331, #000000);
+    background: linear-gradient(to bottom, #8E0E00, #1F1C18);
+    background-attachment: fixed;
 }
 
-html {
+button {
+    background: transparent;
     color: white;
+    font-size: 1.3rem;
+    padding: 5px;
+    border: 2px solid white;
+    border-radius: 15px;
+    outline: none;
+}
+
+button:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .hidden {
@@ -22,8 +42,59 @@ html {
 }
 
 .clicked {
-    transform: scale(0.9);
+    transform: scale(0.9) skew(-1deg);
+    opacity: 0.5;
 }
+
+.save-recipe-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+.save-recipe-btn i {
+    font-size: 1rem;
+}
+
+/* End of General Styling */
+
+.menu-screen-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.menu-screen-layout h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.option {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.option button {
+    margin: 10px 0;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 700;
+}
+
+/* End of Menu Screen */
 
 .my-ingredients-screen,
 .my-ingredients-screen-layout {
@@ -32,11 +103,29 @@ html {
 
 .my-ingredients-screen-layout {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     justify-content: center;
     align-items: center;
     position: absolute;
     top: 20px;
+}
+
+.my-ingredients-screen-layout h1 {
+    text-align: center;
+}
+
+.ingredients-options {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
+.ingredients-options button {
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 8px;
 }
 
 .my-ingredients-display {
@@ -44,7 +133,7 @@ html {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    margin-bottom: 30px;
+    margin-top: 30px;
 }
 
 .ingredient-box {
@@ -52,10 +141,13 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 3px solid white;
-    background: darkgreen;
-    border-radius: 20px;
-    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 20px;
     transition: 0.2s;
     height: 300px;
 }
@@ -68,7 +160,7 @@ html {
 
 .ingredient-box:hover {
     cursor: pointer;
-    border-color: red;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .ingredient-box h1 {
@@ -84,9 +176,87 @@ html {
 
 }
 
+.add-remove-ingredients-screen-layout button {
+    margin: 30px 0 20px 0;
+    font-size: 2rem;
+    font-weight: 700;
+    border-width: 4px;
+    padding: 10px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
 .ingredients-container {
     gap: 20px;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
+
+/* End of Ingredients Screen */
+
+.recipes-screen-layout {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.recipes-screen-layout h1 {
+    font-size: 5rem;
+}
+
+.recipes-screen-layout button {
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+.recipes-container {
+    width: 90%;
+    margin: 30px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.recipe-box {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    height: auto;
+    position: relative;
+    transition: 0.2s;
+}
+
+.recipe-box:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.recipe-box h1 {
+    font-size: 1.8rem;
+    text-wrap: wrap;
+    max-width: 90%;
+}
+
+.recipe-box p {
+    position: absolute;
+    bottom: 3px;
+}
+
+.recipe-box img {
+    width: 100%;
+    object-fit: cover;
+    align-self: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* End of Recipes Screen */
