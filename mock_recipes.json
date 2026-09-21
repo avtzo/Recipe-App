@@ -1,0 +1,22 @@
+{
+  "recipes": [
+    {
+      "id": 716429,
+      "title": "Pasta with Garlic, Tomato & Chili Pepper",
+      "image": "https://img.spoonacular.com/recipes/716429-556x370.jpg",
+      "readyInMinutes": 45
+    },
+    {
+      "id": 715538,
+      "title": "Bruschetta with Tomato and Basil",
+      "image": "https://img.spoonacular.com/recipes/715538-556x370.jpg",
+      "readyInMinutes": 15
+    },
+    {
+      "id": 654959,
+      "title": "Pasta Primavera",
+      "image": "https://img.spoonacular.com/recipes/654959-556x370.jpg",
+      "readyInMinutes": 30
+    }
+  ]
+}

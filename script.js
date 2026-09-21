@@ -1,4 +1,5 @@
 import { ingredientsList } from "./ingredients.js";
+const USE_MOCK = true; // Set to True for testing without using the API.
 
 const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
@@ -30,6 +31,13 @@ const ingredientsOptions = document.querySelector(".ingredients-options");
 // End of Elements
 
 async function getData(type, ingredients = []) {
+    if (USE_MOCK) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await fetch("./mock_recipes.json");
+        const data = await response.json();
+        return data;
+    }
+
     const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
 
     try {
@@ -38,11 +46,11 @@ async function getData(type, ingredients = []) {
         if (type === "randomSearch") {
             response = await fetch(randomRecipesUrl);
         }
-        
-        if (type === "ingredientSearch") {
+
+        if (type === "ingredientSearch") {                        
             const cleanIngredients = Array.isArray(ingredients) 
-                ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
-                : "";
+            ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
+            : "";
             const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=6`;
             response = await fetch(recipesByIngredientUrl);
         }
@@ -77,13 +85,20 @@ function createRecipeContainer(recipe) {
         <h1 class="recipe-name">${recipe.title}</h1>
         <p class="ready-time">Ready In: <span>${recipe.readyInMinutes ? recipe.readyInMinutes + " mins" : "N/A"}</span></p>
         <button type="button" class="save-recipe-btn"><i class="fa-${iconType} fa-bookmark"></i></button>    
-    `;
+        `;
     return container;
 }
 
 async function displayRandomRecipes() {
-    recipesContainer.innerHTML = "";
+    renderSkeletons();
+
     const data = await getData("randomSearch");
+
+    recipesContainer.innerHTML = "";
+
+    if (!data) {
+        recipesContainer.innerHTML = `<p class="recipe-error-msg">Couldn't find any recipes:( Please try again later.</p>`
+    }
     const recipes = data?.recipes || [];
     
     recipes.forEach((recipe) => {
@@ -92,23 +107,32 @@ async function displayRandomRecipes() {
 }
 
 async function searchRecipesByIngredients() {
-    recipesContainer.innerHTML = "";
-    const data = await getData("ingredientSearch", myIngredients);
+    renderSkeletons();
     
+    const data = await getData("ingredientSearch", myIngredients);
+
+    recipesContainer.innerHTML = "";
+
+    if (!data) {
+        recipesContainer.innerHTML = `<p class="recipe-error-msg">Couldn't find any recipes:( Please try again later.</p>`
+    }
     const recipes = Array.isArray(data) ? data : []; 
+    
     recipes.forEach((recipe) => {
         recipesContainer.appendChild(createRecipeContainer(recipe));
     });
 }
 
 async function showSavedRecipes() {    
-    recipesContainer.innerHTML = "";
-
+    renderSkeletons();
+    
     if (mySavedRecipes.length === 0) {
         recipesContainer.innerHTML = `<p id="no-saved-recipes-msg">You don't have any saved recipes yet!</p>`;
         return;
     }
     const data = await getData("savedSearch");
+    
+    recipesContainer.innerHTML = "";
     const recipes = Array.isArray(data) ? data : [];
 
     recipes.forEach((recipe) => {
@@ -142,6 +166,21 @@ function renderIngredients(type, ingredientIds) {
             ingredientsContainer.appendChild(container);
         }
     });
+}
+
+function renderSkeletons() {
+    recipesContainer.innerHTML = "";
+    for (let i = 0; i < 6; i++) {
+        const skeletonCard = document.createElement("div");
+        skeletonCard.classList.add("recipe-box");
+        skeletonCard.innerHTML = 
+        `
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text"></div>
+        `;
+        recipesContainer.appendChild(skeletonCard);
+    }
 }
 
 document.addEventListener("click", (e) => {
@@ -216,10 +255,14 @@ confirmAddRemoveIngredientBtn.addEventListener("click", () => {
     renderIngredients("myIngredients", selectedIds);
 });
 
-confirmIngredientsBtn.addEventListener("click", () => {    
+confirmIngredientsBtn.addEventListener("click", () => {
+    if (myIngredients.length === 0) {
+        alert("Please select at least 1 Ingredient.");
+        return;
+    }    
+    searchRecipesByIngredients();
     myIngredientsScreen.classList.add("hidden");
     recipesScreen.classList.remove("hidden");
-    searchRecipesByIngredients();
 });
 
 savedRecipesBtn.addEventListener("click", () => {
