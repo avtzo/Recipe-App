@@ -217,46 +217,43 @@ button:hover {
     width: 90%;
     margin: 30px 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
 .recipe-box {
+    max-width: 800px;
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.15); 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
-    padding: 20px;
-    height: auto;
     position: relative;
-    transition: 0.2s;
+    border-radius: 20px;
+    box-shadow: 3px 0 5px black;
 }
 
-.recipe-box:hover {
-    background: rgba(255, 255, 255, 0.1);
+.recipe-box img {
+    width: 100%;
+    border-radius: 20px;
 }
 
 .recipe-box h1 {
-    font-size: 1.8rem;
+    position: absolute;
+    bottom: 20px;
+    left: 5px;
+    font-size: 1.5rem;
     text-wrap: wrap;
-    max-width: 90%;
+    max-width: 80%;
 }
 
 .recipe-box p {
     position: absolute;
     bottom: 3px;
+    left: 8px;
 }
 
-.recipe-box img {
-    width: 100%;
-    object-fit: cover;
-    align-self: center;
-    border-radius: 10px;
-    margin-bottom: 20px;
+#no-saved-recipes-msg {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
 }
 
 /* End of Recipes Screen */

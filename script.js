@@ -2,7 +2,8 @@ import { ingredientsList } from "./ingredients.js";
 
 const apiKey = ""; // Your API Key Here
 const myIngredients = JSON.parse(localStorage.getItem("myIngredients")) || [];
-const mySavedRecipes = JSON.parse(localStorage.getItem("mySavedRecipes")) || [];
+const savedRecipes = JSON.parse(localStorage.getItem("mySavedRecipes"));
+const mySavedRecipes = Array.isArray(savedRecipes) ? savedRecipes : [];
 
 const randomRecipesBtn = document.getElementById("random-recipes-btn");
 const searchByIngredientsBtn = document.getElementById("search-by-ingredient-btn");
@@ -10,6 +11,7 @@ const editIngredientsBtn = document.getElementById("edit-ingredients-btn");
 const confirmAddRemoveIngredientBtn = document.getElementById("add-remove-ingredients-btn");
 const confirmIngredientsBtn = document.getElementById("confirm-ingredients-btn");
 const backToMenuBtn = document.querySelectorAll(".back-to-menu-btn");
+const savedRecipesBtn = document.getElementById("saved-recipes-btn");
 
 // End of Buttons
 
@@ -25,26 +27,33 @@ const currentIngredientsDisplay = document.querySelector(".my-ingredients-displa
 const recipesContainer = document.querySelector(".recipes-container");
 const ingredientsOptions = document.querySelector(".ingredients-options");
 
-
 // End of Elements
 
 async function getData(type, ingredients = []) {
     const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
-    
-    const cleanIngredients = Array.isArray(ingredients) 
-        ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
-        : "";
-    
-    const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=6`;
-    
+
     try {
         let response = "";
+        
         if (type === "randomSearch") {
             response = await fetch(randomRecipesUrl);
         }
+        
         if (type === "ingredientSearch") {
+            const cleanIngredients = Array.isArray(ingredients) 
+                ? ingredients.map(id => ingredientsList.find(item => item.id === Number(id))?.name).filter(Boolean).join(",")
+                : "";
+            const recipesByIngredientUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${cleanIngredients}&number=6`;
             response = await fetch(recipesByIngredientUrl);
         }
+        
+        if (type === "savedSearch") {
+            if (mySavedRecipes.length === 0) return [];
+            const savedRecipesIds = mySavedRecipes.join(",");
+            const bulkRecipesUrl = `https://api.spoonacular.com/recipes/informationBulk?apiKey=${apiKey}&ids=${savedRecipesIds}`;
+            response = await fetch(bulkRecipesUrl);
+        }
+
         if (!response.ok) {
             throw new Error(`Error fetching data: ${response.status}`);
         }
@@ -59,13 +68,15 @@ async function getData(type, ingredients = []) {
 function createRecipeContainer(recipe) {
     const container = document.createElement("div");
     container.classList.add(`recipe-box`);
-    container.setAttribute("data-recipeId", recipe.id);
+    container.setAttribute("data-recipe-id", recipe.id);
+    let iconType = mySavedRecipes.includes(recipe.id) ? "solid" : "regular"; 
+    
     container.innerHTML = 
     `
         <img src="${recipe.image}" alt="${recipe.title}">
         <h1 class="recipe-name">${recipe.title}</h1>
         <p class="ready-time">Ready In: <span>${recipe.readyInMinutes ? recipe.readyInMinutes + " mins" : "N/A"}</span></p>
-        <button type="button" class="save-recipe-btn"><i class="fa-regular fa-bookmark"></i></button>    
+        <button type="button" class="save-recipe-btn"><i class="fa-${iconType} fa-bookmark"></i></button>    
     `;
     return container;
 }
@@ -74,7 +85,6 @@ async function displayRandomRecipes() {
     recipesContainer.innerHTML = "";
     const data = await getData("randomSearch");
     const recipes = data?.recipes || [];
-    console.log(data);
     
     recipes.forEach((recipe) => {
         recipesContainer.appendChild(createRecipeContainer(recipe));
@@ -84,9 +94,23 @@ async function displayRandomRecipes() {
 async function searchRecipesByIngredients() {
     recipesContainer.innerHTML = "";
     const data = await getData("ingredientSearch", myIngredients);
-    console.log(data);
     
     const recipes = Array.isArray(data) ? data : []; 
+    recipes.forEach((recipe) => {
+        recipesContainer.appendChild(createRecipeContainer(recipe));
+    });
+}
+
+async function showSavedRecipes() {    
+    recipesContainer.innerHTML = "";
+
+    if (mySavedRecipes.length === 0) {
+        recipesContainer.innerHTML = `<p id="no-saved-recipes-msg">You don't have any saved recipes yet!</p>`;
+        return;
+    }
+    const data = await getData("savedSearch");
+    const recipes = Array.isArray(data) ? data : [];
+
     recipes.forEach((recipe) => {
         recipesContainer.appendChild(createRecipeContainer(recipe));
     });
@@ -120,15 +144,30 @@ function renderIngredients(type, ingredientIds) {
     });
 }
 
-
 document.addEventListener("click", (e) => {
     const ingredientBox = e.target.closest(".all-ingredients");
     const saveRecipeBtn = e.target.closest(".save-recipe-btn");
+    
     if (ingredientBox) {
         ingredientBox.classList.toggle("clicked");
     }
+    
     if (saveRecipeBtn) {
-        
+        const recipeCard = saveRecipeBtn.closest(".recipe-box");
+        const recipeId = Number(recipeCard.dataset.recipeId);
+        const bookmarkIcon = saveRecipeBtn.querySelector("i");
+
+        const index = mySavedRecipes.indexOf(recipeId);
+
+        if (index === -1) {
+            mySavedRecipes.push(recipeId);
+            bookmarkIcon.className = "fa-solid fa-bookmark";
+        } else {
+            mySavedRecipes.splice(index, 1);
+            bookmarkIcon.className = "fa-regular fa-bookmark";
+        }
+
+        localStorage.setItem("mySavedRecipes", JSON.stringify(mySavedRecipes));
     }
 });
 
@@ -183,3 +222,8 @@ confirmIngredientsBtn.addEventListener("click", () => {
     searchRecipesByIngredients();
 });
 
+savedRecipesBtn.addEventListener("click", () => {
+    menuScreen.classList.add("hidden");
+    recipesScreen.classList.remove("hidden");
+    showSavedRecipes();
+});
