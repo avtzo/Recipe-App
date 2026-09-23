@@ -30,7 +30,7 @@ A modern, responsive Single Page Application (SPA) built with Vanilla JavaScript
 
 ---
 
-📂 Project Structure
+## 📂 Project Structure
 ```text
 ├── index.html            # Main HTML layout & screen containers
 ├── style.css             # Glassmorphism styling, CSS Grid, and responsive queries
