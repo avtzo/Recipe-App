@@ -9,6 +9,15 @@
     }
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -39,11 +48,23 @@ button {
     border: 2px solid white;
     border-radius: 15px;
     outline: none;
+    transition: 0.2s;
 }
 
 button:hover {
+    cursor: pointer;
     transform: scale(1.05);
     background: rgba(255, 255, 255, 0.2);
+}
+
+button:active {
+    transform: scale(0.95) !important;
+}
+
+button:focus {
+    outline: none;
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px black;
 }
 
 .hidden {
@@ -114,6 +135,7 @@ button:hover {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     border-radius: 16px;
     padding: 20px;
+    animation: fadeIn 1s forwards ease;
 }
 
 .menu-screen-layout h1 {
@@ -148,6 +170,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     top: 20px;
+    animation: fadeIn 1s forwards ease;
 }
 
 .my-ingredients-screen-layout h1 {
@@ -213,7 +236,7 @@ button:hover {
     align-items: center;
     justify-content: center;
     width: 90vw;
-
+    animation: fadeIn 1s forwards ease;
 }
 
 .add-remove-ingredients-screen-layout button {
@@ -243,6 +266,7 @@ button:hover {
     flex-direction: column;
     align-items: center;
     position: relative;
+    animation: fadeIn 1s forwards ease;
 }
 
 .recipes-screen-layout h1 {
@@ -272,6 +296,7 @@ button:hover {
     position: relative;
     border-radius: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    padding-bottom: 10px;
 }
 
 .recipe-box img {
@@ -283,18 +308,16 @@ button:hover {
 }
 
 .recipe-box h1 {
-    position: absolute;
-    bottom: 30px;
-    left: 10px;
-    font-size: 1.5rem;
-    text-wrap: wrap;
+    position: static;
+    padding: 12px 15px 5px 15px;
+    font-size: 1.3rem;
     max-width: 80%;
 }
 
 .recipe-box p {
-    position: absolute;
-    bottom: 10px;
-    left: 15px;
+    position: static;
+    padding: 0 15px;
+    font-size: 0.9rem;
 }
 
 #no-saved-recipes-msg {
@@ -310,3 +333,96 @@ button:hover {
 }
 
 /* End of Recipes Screen */
+
+.error-screen-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    width: 90%;
+    margin: auto;
+    animation: fadeIn 1s forwards ease;
+}
+
+.error-screen-layout h1 {
+    text-align: center;
+    width: 95%;
+}
+
+.error-screen-layout img {
+    width: 60%;
+    margin: 30px 0;
+}
+
+.error-screen-layout p {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 550;
+}
+
+.error-screen-layout button {
+    margin-top: 20px;
+}
+
+/* End of Error Screen */
+
+@media screen and (max-width: 768px) {
+    .menu-screen-layout {
+        width: 90%;
+        margin: auto;
+    }
+
+    .menu-screen-layout h1 {
+        text-align: center;
+    }
+
+    .ingredients-options {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .my-ingredients-display,
+    .ingredients-container {
+        width: 100%;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .ingredient-box {
+        width: 100%;
+        max-width: 150px;
+        height: 200px;
+        justify-self: center;
+    }
+
+    .recipes-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .recipe-box {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .skeleton-title {
+        width: 90%;
+        margin: 15px auto 8px auto;
+    }
+
+    .skeleton-text {
+        width: 60%;
+        margin: 0 auto 15px auto;
+    }
+}

@@ -20,6 +20,7 @@ const menuScreen = document.querySelector(".menu-screen");
 const myIngredientsScreen = document.querySelector(".my-ingredients-screen");
 const addRemoveIngredientScreen = document.querySelector(".add-remove-ingredients-screen");
 const recipesScreen = document.querySelector(".recipes-screen");
+const errorScreen = document.querySelector(".error-screen");
 
 // End of Screens
 
@@ -94,11 +95,14 @@ async function displayRandomRecipes() {
 
     const data = await getData("randomSearch");
 
+    if (!data) {
+        errorScreen.classList.remove("hidden");
+        recipesScreen.classList.add("hidden");
+        return;
+    }
+
     recipesContainer.innerHTML = "";
 
-    if (!data) {
-        recipesContainer.innerHTML = `<p class="recipe-error-msg">Couldn't find any recipes:( Please try again later.</p>`
-    }
     const recipes = data?.recipes || [];
     
     recipes.forEach((recipe) => {
@@ -111,11 +115,14 @@ async function searchRecipesByIngredients() {
     
     const data = await getData("ingredientSearch", myIngredients);
 
+    if (!data) {
+        errorScreen.classList.remove("hidden");
+        recipesScreen.classList.add("hidden");
+        return;
+    }
+
     recipesContainer.innerHTML = "";
 
-    if (!data) {
-        recipesContainer.innerHTML = `<p class="recipe-error-msg">Couldn't find any recipes:( Please try again later.</p>`
-    }
     const recipes = Array.isArray(data) ? data : []; 
     
     recipes.forEach((recipe) => {
@@ -131,6 +138,12 @@ async function showSavedRecipes() {
         return;
     }
     const data = await getData("savedSearch");
+
+    if (!data) {
+        errorScreen.classList.remove("hidden");
+        recipesScreen.classList.add("hidden");
+        return;
+    }
     
     recipesContainer.innerHTML = "";
     const recipes = Array.isArray(data) ? data : [];
@@ -204,9 +217,22 @@ document.addEventListener("click", (e) => {
         } else {
             mySavedRecipes.splice(index, 1);
             bookmarkIcon.className = "fa-regular fa-bookmark";
+
+            if (!recipesScreen.classList.contains("hidden") && recipesContainer.children.length > 0) {
+                recipeCard.remove();
+                if (mySavedRecipes.length === 0) {
+                    recipesContainer.innerHTML = `<p>You don't have any saved recipes yet!</p>`;
+                }
+            }
         }
 
         localStorage.setItem("mySavedRecipes", JSON.stringify(mySavedRecipes));
+    }    
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !addRemoveIngredientScreen.classList.contains("hidden")) {
+        confirmAddRemoveIngredientBtn.click();
     }
 });
 
@@ -228,6 +254,7 @@ backToMenuBtn.forEach((btn) => {
         menuScreen.classList.remove("hidden");
         recipesScreen.classList.add("hidden");
         myIngredientsScreen.classList.add("hidden");
+        errorScreen.classList.add("hidden");
     });
 });
 
