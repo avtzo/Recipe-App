@@ -37,7 +37,7 @@ async function getData(type, ingredients = []) {
         const response = await fetch("./mock_recipes.json");
         const data = await response.json();
         return data;
-    }
+    } // For mock Mode
 
     const randomRecipesUrl = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=6`;
 
@@ -78,7 +78,7 @@ function createRecipeContainer(recipe) {
     const container = document.createElement("div");
     container.classList.add(`recipe-box`);
     container.setAttribute("data-recipe-id", recipe.id);
-    let iconType = mySavedRecipes.includes(recipe.id) ? "solid" : "regular"; 
+    let iconType = mySavedRecipes.includes(recipe.id) ? "solid" : "regular"; // Changes Between filled and unfilled bookmark icon
     
     container.innerHTML = 
     `
@@ -91,7 +91,7 @@ function createRecipeContainer(recipe) {
 }
 
 async function displayRandomRecipes() {
-    renderSkeletons();
+    renderSkeletons(); // Skeleton Loader
 
     const data = await getData("randomSearch");
 
@@ -111,7 +111,7 @@ async function displayRandomRecipes() {
 }
 
 async function searchRecipesByIngredients() {
-    renderSkeletons();
+    renderSkeletons(); // Skeleton Loader
     
     const data = await getData("ingredientSearch", myIngredients);
 
@@ -131,7 +131,7 @@ async function searchRecipesByIngredients() {
 }
 
 async function showSavedRecipes() {    
-    renderSkeletons();
+    renderSkeletons(); // Skeleton Loader
     
     if (mySavedRecipes.length === 0) {
         recipesContainer.innerHTML = `<p id="no-saved-recipes-msg">You don't have any saved recipes yet!</p>`;
@@ -146,7 +146,7 @@ async function showSavedRecipes() {
     }
     
     recipesContainer.innerHTML = "";
-    const recipes = Array.isArray(data) ? data : [];
+    const recipes = Array.isArray(data) ? data : []; // Checks if data is an Array and if not it uses an empty Array
 
     recipes.forEach((recipe) => {
         recipesContainer.appendChild(createRecipeContainer(recipe));
@@ -156,7 +156,7 @@ async function showSavedRecipes() {
 function renderIngredients(type, ingredientIds) {
     ingredientIds.forEach((ingredientId) => {
         const ingredient = ingredientsList.find(
-            (ingredient) => ingredient.id === Number(ingredientId)
+            (ingredient) => ingredient.id === Number(ingredientId) // Takes the ingredient ID and returns the full ingredient object
         );
         if (!ingredient) return;
 
